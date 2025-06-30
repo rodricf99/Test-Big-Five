@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Test de Personalidad Big Five</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f4f4f4;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+    .results {
+      margin-top: 30px;
+      background: #dff0d8;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Test de Personalidad - Big Five</h1>
+<p>Responde honestamente. No hay respuestas buenas o malas.</p>
+
+<form id="bigFiveForm"></form>
+<button onclick="calcularResultado()">Ver Resultado</button>
+
+<div class="results" id="resultados" style="display:none;"></div>
+
+<script>
+const preguntas = [
+  { texto: "Me gusta explorar nuevas ideas", rasgo: "apertura", invertir: false },
+  { texto: "Disfruto con el arte y la creatividad", rasgo: "apertura", invertir: false },
+  { texto: "Me considero una persona imaginativa", rasgo: "apertura", invertir: false },
+  { texto: "Me gusta aprender cosas nuevas", rasgo: "apertura", invertir: false },
+  { texto: "Me aburro fácilmente con la rutina", rasgo: "apertura", invertir: true },
+
+  { texto: "Cumplo mis deberes sin falta", rasgo: "responsabilidad", invertir: false },
+  { texto: "Soy una persona organizada", rasgo: "responsabilidad", invertir: false },
+  { texto: "Me cuesta dejar cosas sin terminar", rasgo: "responsabilidad", invertir: true },
+  { texto: "Planifico con antelación", rasgo: "responsabilidad", invertir: false },
+  { texto: "Soy confiable y constante", rasgo: "responsabilidad", invertir: false },
+
+  { texto: "Me siento cómodo en grupos grandes", rasgo: "extraversión", invertir: false },
+  { texto: "Me gusta estar rodeado de gente", rasgo: "extraversión", invertir: false },
+  { texto: "Soy una persona habladora", rasgo: "extraversión", invertir: false },
+  { texto: "Disfruto siendo el centro de atención", rasgo: "extraversión", invertir: false },
+  { texto: "Me activo en situaciones sociales", rasgo: "extraversión", invertir: false },
+
+  { texto: "Me preocupo por los demás", rasgo: "amabilidad", invertir: false },
+  { texto: "Evito conflictos siempre que puedo", rasgo: "amabilidad", invertir: false },
+  { texto: "Me esfuerzo por ayudar a los demás", rasgo: "amabilidad", invertir: false },
+  { texto: "Soy compasivo con los errores ajenos", rasgo: "amabilidad", invertir: false },
+  { texto: "Confío fácilmente en la gente", rasgo: "amabilidad", invertir: false },
+
+  { texto: "Me preocupo con frecuencia", rasgo: "neuroticismo", invertir: false },
+  { texto: "Me cuesta relajarme", rasgo: "neuroticismo", invertir: false },
+  { texto: "Suelo sentirme inseguro/a", rasgo: "neuroticismo", invertir: false },
+  { texto: "Me altero con facilidad", rasgo: "neuroticismo", invertir: false },
+  { texto: "A veces me siento abrumado por mis emociones", rasgo: "neuroticismo", invertir: false }
+];
+
+const formulario = document.getElementById("bigFiveForm");
+
+preguntas.forEach((pregunta, index) => {
+  const div = document.createElement("div");
+  div.className = "question";
+  div.innerHTML = `<strong>${index + 1}. ${pregunta.texto}</strong>`;
+  for (let i = 1; i <= 5; i++) {
+    div.innerHTML += `
+      <label><input type="radio" name="q${index}" value="${i}" required> ${i}</label>
+    `;
+  }
+  formulario.appendChild(div);
+});
+
+function calcularResultado() {
+  const resultados = {
+    apertura: 0,
+    responsabilidad: 0,
+    extraversión: 0,
+    amabilidad: 0,
+    neuroticismo: 0
+  };
+
+  for (let i = 0; i < preguntas.length; i++) {
+    const respuestas = document.getElementsByName("q" + i);
+    let valor = null;
+    respuestas.forEach((r) => {
+      if (r.checked) valor = parseInt(r.value);
+    });
+
+    if (valor === null) {
+      alert("Por favor responde todas las preguntas.");
+      return;
+    }
+
+    if (preguntas[i].invertir) valor = 6 - valor;
+    resultados[preguntas[i].rasgo] += valor;
+  }
+
+  mostrarResultado(resultados);
+}
+
+function mostrarResultado(puntajes) {
+  const interpretacion = (score) => {
+    if (score >= 21) return "Muy alta";
+    if (score >= 17) return "Alta";
+    if (score >= 13) return "Media";
+    if (score >= 9)  return "Baja";
+    return "Muy baja";
+  };
+
+  const html = `
+    <h2>Tu perfil de personalidad</h2>
+    <ul>
+      <li><strong>Apertura:</strong> ${puntajes.apertura} (${interpretacion(puntajes.apertura)})</li>
+      <li><strong>Responsabilidad:</strong> ${puntajes.responsabilidad} (${interpretacion(puntajes.responsabilidad)})</li>
+      <li><strong>Extraversión:</strong> ${puntajes.extraversión} (${interpretacion(puntajes.extraversión)})</li>
+      <li><strong>Amabilidad:</strong> ${puntajes.amabilidad} (${interpretacion(puntajes.amabilidad)})</li>
+      <li><strong>Neuroticismo:</strong> ${puntajes.neuroticismo} (${interpretacion(puntajes.neuroticismo)})</li>
+    </ul>
+    <p><em>Este test es de uso divulgativo. No reemplaza una evaluación profesional.</em></p>
+  `;
+
+  document.getElementById("resultados").innerHTML = html;
+  document.getElementById("resultados").style.display = "block";
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
